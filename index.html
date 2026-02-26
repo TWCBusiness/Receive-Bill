@@ -28,24 +28,39 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* ซ่อน Scrollbar แนวนอนบางส่วนให้ดูสวยขึ้น (Optional) */
+        .hide-scroll::-webkit-scrollbar {
+            height: 6px; /* ปรับให้บางลงอีกนิดสำหรับมือถือ */
+        }
+        .hide-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 4px;
+        }
+        .hide-scroll::-webkit-scrollbar-thumb {
+            background: #ccc; 
+            border-radius: 4px;
+        }
+        .hide-scroll::-webkit-scrollbar-thumb:hover {
+            background: #aaa; 
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <!-- App Container -->
-    <div id="app" class="flex-grow flex items-center justify-center p-4">
+    <div id="app" class="flex-grow flex items-center justify-center p-2 sm:p-4">
         
         <!-- Page 1: Login -->
-        <div id="loginPage" class="w-full max-w-md glass-morphism rounded-2xl shadow-2xl p-8 transition-all duration-500">
+        <div id="loginPage" class="w-full max-w-md glass-morphism rounded-2xl shadow-2xl p-6 sm:p-8 transition-all duration-500">
             <div class="text-center mb-8">
                 <div class="flex justify-center mb-4">
                     <div class="w-32 h-12 bg-gray-100 flex items-center justify-center rounded font-bold text-gray-400">WACOAL</div>
                 </div>
-                <h2 class="text-2xl font-semibold text-gray-800">ระบบจัดการข้อมูลการรับบิล</h2>
-                <p class="text-gray-500 text-sm mt-1"></p>
+                <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">ระบบจัดการข้อมูลการรับบิล</h2>
+                <p class="text-gray-500 text-xs sm:text-sm mt-1"></p>
             </div>
 
-            <form id="loginForm" class="space-y-6">
+            <form id="loginForm" class="space-y-5 sm:space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
                     <input type="text" id="username" required 
@@ -71,44 +86,48 @@
         </div>
 
         <!-- Page 2: Dashboard/ReceiveBill -->
-        <div id="dashboardPage" class="hidden w-full max-w-6xl flex flex-col space-y-4">
-            <div class="bg-white rounded-xl shadow-md p-6 flex flex-col md:flex-row justify-between items-center glass-morphism">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-wacoal-pink rounded-full flex items-center justify-center text-white font-bold text-xl shadow-inner">W</div>
-                    <div>
-                        <h1 class="text-xl font-bold text-gray-800" id="userDisplayName">Welcome, User</h1>
-                        <p class="text-gray-500 text-sm">ข้อมูลการรับบิล (Receive Bill)</p>
+        <div id="dashboardPage" class="hidden w-full max-w-6xl flex flex-col space-y-4 w-full">
+            <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center glass-morphism">
+                <div class="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-wacoal-pink rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-inner shrink-0">W</div>
+                    <div class="truncate">
+                        <h1 class="text-lg sm:text-xl font-bold text-gray-800 truncate" id="userDisplayName">Welcome, User</h1>
+                        <p class="text-gray-500 text-xs sm:text-sm">ข้อมูลการรับบิล (Receive Bill)</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4 mt-4 md:mt-0">
-                    <button onclick="fetchData()" class="text-sm font-medium text-wacoal-pink hover:bg-red-50 px-4 py-2 rounded-lg transition-all">
-                        🔄 รีเฟรชข้อมูล
+                <!-- ปรับ Layout ปุ่มให้รองรับมือถือ -->
+                <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-100 sm:space-x-4">
+                    <button onclick="fetchData()" class="text-xs sm:text-sm font-medium text-wacoal-pink bg-red-50 sm:bg-transparent hover:bg-red-100 sm:hover:bg-red-50 px-3 sm:px-4 py-2 rounded-lg transition-all flex items-center">
+                        <span class="mr-1">🔄</span> รีเฟรชข้อมูล
                     </button>
-                    <button onclick="logout()" class="text-gray-500 hover:text-red-500 font-medium transition-colors text-sm">
+                    <button onclick="logout()" class="text-gray-500 hover:text-red-500 font-medium transition-colors text-xs sm:text-sm px-2 py-2">
                         ออกจากระบบ
                     </button>
                 </div>
             </div>
 
             <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                <div class="overflow-x-auto hide-scroll pb-2">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
                         <thead>
                             <tr class="bg-gray-50 border-b border-gray-200">
-                                <th class="px-6 py-4 text-sm font-semibold text-gray-600">Store Name</th>
-                                <th class="px-6 py-4 text-sm font-semibold text-gray-600">Store ID</th>
-                                <th class="px-6 py-4 text-sm font-semibold text-gray-600">Bill No.</th>
-                                <th class="px-6 py-4 text-sm font-semibold text-gray-600">Bill Date</th>
-                                <th class="px-6 py-4 text-sm font-semibold text-gray-600 text-center">QTY</th>
-                                <th class="px-6 py-4 text-sm font-semibold text-gray-600 text-right">Total</th>
-                                <th class="px-6 py-4 text-sm font-semibold text-gray-600">Received Date</th>
-                                <th class="px-6 py-4 text-sm font-semibold text-gray-600">Status</th>
-                                <th class="px-6 py-4 text-sm font-semibold text-gray-600 text-center">Action</th>
+                                <!-- ปรับขนาดฟอนต์และ Padding สำหรับหน้าจอมือถือและ Desktop -->
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600">Store Name</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600">Store ID</th>
+                                
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-bold text-gray-800 sticky left-0 z-20 bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Bill No.</th>
+                                
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600">Bill Date</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-center">QTY</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-right">Total</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600">Received Date</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600">Status</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody id="billTableBody" class="divide-y divide-gray-100">
                             <tr>
-                                <td colspan="9" class="px-6 py-10 text-center text-gray-400">กรุณารอสักครู่...</td>
+                                <td colspan="9" class="px-6 py-10 text-center text-sm text-gray-400">กรุณารอสักครู่...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -117,12 +136,12 @@
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-3 bg-gray-800 text-white rounded-full shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-50">
+    <div id="toast" class="fixed bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 px-4 sm:px-6 py-2 sm:py-3 bg-gray-800 text-white text-sm sm:text-base rounded-full shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-50 whitespace-nowrap">
         ข้อความแจ้งเตือน
     </div>
 
     <div id="globalLoader" class="fixed inset-0 bg-white/60 backdrop-blur-sm hidden flex items-center justify-center z-[100]">
-        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-10 w-10 sm:h-12 sm:w-12"></div>
     </div>
 
     <script>
@@ -194,7 +213,7 @@
 
         async function fetchData() {
             const tbody = document.getElementById('billTableBody');
-            tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-10 text-center text-gray-400">กำลังดึงข้อมูลล่าสุดจากระบบ...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-10 text-center text-sm text-gray-400">กำลังดึงข้อมูลล่าสุดจากระบบ...</td></tr>';
             
             if (!isValidUrl(SCRIPT_URL)) {
                 allBills = [
@@ -215,7 +234,6 @@
             }
         }
 
-        // ฟังก์ชันช่วยจัดฟอร์แมตวันที่สำหรับ input type="date" (ต้องเป็น YYYY-MM-DD)
         function formatDateForInput(dateVal) {
             if (!dateVal) return "";
             try {
@@ -230,12 +248,11 @@
             }
         }
 
-        // ฟังก์ชันสำหรับแสดงผลวันที่ในรูปแบบ dd/MM/yyyy
         function formatDateDisplay(dateVal) {
             if (!dateVal) return "-";
             try {
                 const d = new Date(dateVal);
-                if (isNaN(d.getTime())) return dateVal; // ถ้าแปลงไม่ได้ ให้แสดงค่าเดิม
+                if (isNaN(d.getTime())) return dateVal; 
                 const day = ('' + d.getDate()).padStart(2, '0');
                 const month = ('' + (d.getMonth() + 1)).padStart(2, '0');
                 const year = d.getFullYear();
@@ -250,7 +267,7 @@
             tbody.innerHTML = '';
 
             if (bills.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-10 text-center text-gray-500">ไม่พบรายการบิลสำหรับสาขาของคุณ</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-10 text-center text-sm text-gray-500">ไม่พบรายการบิลสำหรับสาขาของคุณ</td></tr>';
                 return;
             }
 
@@ -260,29 +277,33 @@
                 const isReceived = !!inputDateValue;
                 
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50 transition-colors";
+                tr.className = "group hover:bg-gray-50 transition-colors";
+                
+                // ใช้ Tailwind แบบ Responsive (xs สำหรับมือถือ, sm สำหรับ Desktop)
                 tr.innerHTML = `
-                    <td class="px-6 py-4 text-sm text-gray-800">${bill.storeName}</td>
-                    <td class="px-6 py-4 text-sm text-gray-500">${bill.store}</td>
-                    <td class="px-6 py-4 text-sm font-medium text-gray-800">${bill.billNo}</td>
-                    <td class="px-6 py-4 text-sm text-gray-500">${bill.billDate}</td>
-                    <td class="px-6 py-4 text-sm text-center text-gray-800">${bill.qty}</td>
-                    <td class="px-6 py-4 text-sm text-right font-semibold text-gray-800">฿${Number(bill.total).toLocaleString()}</td>
-                    <td class="px-6 py-4">
-                        <div class="flex flex-col">
+                    <td class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm text-gray-800">${bill.storeName}</td>
+                    <td class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm text-gray-500">${bill.store}</td>
+                    
+                    <td class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-medium text-wacoal-pink sticky left-0 z-10 bg-white group-hover:bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] transition-colors">${bill.billNo}</td>
+                    
+                    <td class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm text-gray-500">${bill.billDate}</td>
+                    <td class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm text-center text-gray-800">${bill.qty}</td>
+                    <td class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm text-right font-semibold text-gray-800">฿${Number(bill.total).toLocaleString()}</td>
+                    <td class="px-3 py-3 sm:px-6 sm:py-4">
+                        <div class="flex flex-col min-w-[130px]">
                             <input type="date" value="${inputDateValue}" 
-                                class="received-date-input bg-gray-50 border border-gray-200 text-sm rounded-md px-2 py-1 outline-none focus:border-wacoal-pink transition-all mb-1"
+                                class="received-date-input bg-gray-50 border border-gray-200 text-xs sm:text-sm rounded-md px-2 py-1.5 sm:py-1 outline-none focus:border-wacoal-pink transition-all mb-1 w-full"
                                 id="date-${index}">
-                            <span class="text-[10px] text-gray-400 pl-1">${isReceived ? 'รับบิลเมื่อ: ' + displayDateValue : 'ยังไม่ได้ระบุ'}</span>
+                            <span class="text-[10px] sm:text-xs text-gray-400 pl-1">${isReceived ? 'รับเมื่อ: ' + displayDateValue : 'ยังไม่ได้ระบุ'}</span>
                         </div>
                     </td>
-                    <td class="px-6 py-4">
-                        <span class="px-3 py-1 text-xs font-semibold rounded-full ${isReceived ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
+                    <td class="px-3 py-3 sm:px-6 sm:py-4">
+                        <span class="px-2 py-1 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-semibold rounded-full ${isReceived ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
                             ${isReceived ? 'Received' : 'Pending'}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-center">
-                        <button onclick="updateData(${index})" class="bg-wacoal-pink/10 text-wacoal-pink hover:bg-wacoal-pink hover:text-white px-3 py-1 rounded transition-all text-xs font-bold uppercase">
+                    <td class="px-3 py-3 sm:px-6 sm:py-4 text-center">
+                        <button onclick="updateData(${index})" class="bg-wacoal-pink/10 text-wacoal-pink hover:bg-wacoal-pink hover:text-white px-3 sm:px-4 py-2 sm:py-1.5 rounded transition-all text-[10px] sm:text-xs font-bold uppercase w-full sm:w-auto">
                             Update
                         </button>
                     </td>
