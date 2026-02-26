@@ -28,9 +28,9 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* ซ่อน Scrollbar แนวนอนบางส่วนให้ดูสวยขึ้น (Optional) */
         .hide-scroll::-webkit-scrollbar {
-            height: 6px; /* ปรับให้บางลงอีกนิดสำหรับมือถือ */
+            height: 6px;
+            width: 6px;
         }
         .hide-scroll::-webkit-scrollbar-track {
             background: #f1f1f1; 
@@ -47,7 +47,6 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- App Container -->
     <div id="app" class="flex-grow flex items-center justify-center p-2 sm:p-4">
         
         <!-- Page 1: Login -->
@@ -57,7 +56,6 @@
                     <div class="w-32 h-12 bg-gray-100 flex items-center justify-center rounded font-bold text-gray-400">WACOAL</div>
                 </div>
                 <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">ระบบจัดการข้อมูลการรับบิล</h2>
-                <p class="text-gray-500 text-xs sm:text-sm mt-1"></p>
             </div>
 
             <form id="loginForm" class="space-y-5 sm:space-y-6">
@@ -86,7 +84,7 @@
         </div>
 
         <!-- Page 2: Dashboard/ReceiveBill -->
-        <div id="dashboardPage" class="hidden w-full max-w-6xl flex flex-col space-y-4 w-full">
+        <div id="dashboardPage" class="hidden w-full max-w-6xl flex flex-col space-y-4">
             <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center glass-morphism">
                 <div class="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-wacoal-pink rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-inner shrink-0">W</div>
@@ -95,7 +93,6 @@
                         <p class="text-gray-500 text-xs sm:text-sm">ข้อมูลการรับบิล (Receive Bill)</p>
                     </div>
                 </div>
-                <!-- ปรับ Layout ปุ่มให้รองรับมือถือ -->
                 <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-100 sm:space-x-4">
                     <button onclick="fetchData()" class="text-xs sm:text-sm font-medium text-wacoal-pink bg-red-50 sm:bg-transparent hover:bg-red-100 sm:hover:bg-red-50 px-3 sm:px-4 py-2 rounded-lg transition-all flex items-center">
                         <span class="mr-1">🔄</span> รีเฟรชข้อมูล
@@ -107,22 +104,23 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                <div class="overflow-x-auto hide-scroll pb-2">
+                <!-- เพิ่ม max-h-screen หรือระบุความสูงเพื่อรองรับการเลื่อนแนวตั้งและ Sticky Header -->
+                <div class="overflow-x-auto overflow-y-auto hide-scroll max-h-[70vh]">
                     <table class="w-full text-left border-collapse whitespace-nowrap">
-                        <thead>
+                        <thead class="sticky top-0 z-30 shadow-sm">
                             <tr class="bg-gray-50 border-b border-gray-200">
-                                <!-- ปรับขนาดฟอนต์และ Padding สำหรับหน้าจอมือถือและ Desktop -->
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600">Store Name</th>
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600">Store ID</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-50">Store Name</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-50">Store ID</th>
                                 
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-bold text-gray-800 sticky left-0 z-20 bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Bill No.</th>
+                                <!-- สำหรับ Bill No: ต้องเพิ่ม top-0 และ z-40 เพื่อให้อยู่เหนือทั้งแถวและคอลัมน์อื่นเวลาเลื่อน -->
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-bold text-gray-800 sticky left-0 top-0 z-40 bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Bill No.</th>
                                 
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600">Bill Date</th>
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-center">QTY</th>
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-right">Total</th>
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600">Received Date</th>
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600">Status</th>
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-center">Action</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-50">Bill Date</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-center bg-gray-50">QTY</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-right bg-gray-50">Total</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-50">Received Date</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-50">Status</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-center bg-gray-50">Action</th>
                             </tr>
                         </thead>
                         <tbody id="billTableBody" class="divide-y divide-gray-100">
@@ -145,7 +143,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_S5fCo98f9he40ApSUnZks2XC-NB3OSmNBj-43K8MdNLMKtaV6oNLqFHqay_Yb0I/exec'; // <--- ใส่ URL จาก Google Apps Script
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_S5fCo98f9he40ApSUnZks2XC-NB3OSmNBj-43K8MdNLMKtaV6oNLqFHqay_Yb0I/exec'; 
         
         let currentUser = null;
         let allBills = [];
@@ -216,10 +214,16 @@
             tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-10 text-center text-sm text-gray-400">กำลังดึงข้อมูลล่าสุดจากระบบ...</td></tr>';
             
             if (!isValidUrl(SCRIPT_URL)) {
-                allBills = [
-                    { storeName: "Central Rama 9", store: "S001", billNo: "B2024-001", billDate: "2024-02-01", qty: 15, total: 12000, receivedDate: "2024-02-20", status: "Received" },
-                    { storeName: "Siam Discovery", store: "S001", billNo: "B2024-002", billDate: "2024-02-05", qty: 8, total: 7200, receivedDate: "", status: "Pending" }
-                ];
+                allBills = Array.from({length: 20}, (_, i) => ({
+                    storeName: "Central Rama 9", 
+                    store: "S001", 
+                    billNo: `B2024-00${i+1}`, 
+                    billDate: "2024-02-01", 
+                    qty: 15, 
+                    total: 12000, 
+                    receivedDate: i % 2 === 0 ? "2024-02-20" : "", 
+                    status: i % 2 === 0 ? "Received" : "Pending"
+                }));
                 renderBills(allBills);
                 return;
             }
@@ -279,7 +283,6 @@
                 const tr = document.createElement('tr');
                 tr.className = "group hover:bg-gray-50 transition-colors";
                 
-                // ใช้ Tailwind แบบ Responsive (xs สำหรับมือถือ, sm สำหรับ Desktop)
                 tr.innerHTML = `
                     <td class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm text-gray-800">${bill.storeName}</td>
                     <td class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm text-gray-500">${bill.store}</td>
@@ -378,4 +381,3 @@
     </script>
 </body>
 </html>
-
