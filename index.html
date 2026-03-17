@@ -279,46 +279,40 @@ function renderBills(bills) {
         const displayDate = formatToThaiDate(bill.receivedDate);
         const billDisplayDate = formatToThaiDate(bill.billDate);
 
-        tr.innerHTML = `
-            <td class="px-6 py-4 text-gray-700">${bill.storeName}</td>
-            <td class="px-6 py-4 text-gray-400 text-xs">${bill.store}</td>
-            <td class="px-6 py-4 font-bold text-wacoal-pink bg-white border-r shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">${bill.billNo}</td>
-            <td class="px-6 py-4 text-gray-500">${billDisplayDate}</td>
-            <td class="px-6 py-4 text-center font-medium">${bill.qty}</td>
-            <td class="px-6 py-4 text-right font-bold text-gray-800">฿${Number(bill.total).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
-            
-            <td class="px-6 py-4 min-w-[180px]">
-                ${isReceived ? 
-                    `<div class="flex items-center text-green-600 font-bold">
-                        <span class="mr-2 text-base">✅</span>
-                        <span>${displayDate}</span>
-                    </div>` : 
-                    `<input type="date" 
-                        class="bg-white border border-gray-200 rounded-xl px-3 py-1.5 outline-none focus:border-wacoal-pink text-xs w-full shadow-sm"
-                        id="date-${index}">`
-                }
-            </td>
-            
-            <td class="px-6 py-4">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${isReceived ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}">
-                    <span class="w-1.5 h-1.5 rounded-full mr-1.5 ${isReceived ? 'bg-green-500' : 'bg-amber-500'}"></span>
-                    ${isReceived ? 'Received' : 'Pending'}
-                </span>
-            </td>
-            
-            <td class="px-6 py-4 text-center">
-                ${isReceived ? 
-                    `<button onclick="reEdit(${index})" 
-                        class="text-gray-400 hover:text-wacoal-pink text-[11px] font-medium transition-colors hover:underline">
-                        แก้ไขข้อมูล
-                    </button>` :
-                    `<button onclick="updateData(${index})" 
-                        class="bg-gray-900 text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-gray-800 transition-all active:scale-95 shadow-md">
-                        บันทึกข้อมูล
-                    </button>`
-                }
-            </td>
-        `;
+// แก้ไขบรรทัดใน renderBills ให้เป็นแบบนี้
+tr.innerHTML = `
+    <td class="px-6 py-4 text-gray-700" data-label="Store">${bill.storeName}</td>
+    <td class="px-6 py-4 text-gray-400 text-xs" data-label="Store ID">${bill.store}</td>
+    <td class="px-6 py-4 font-bold text-wacoal-pink bg-white" data-label="Bill No.">${bill.billNo}</td>
+    <td class="px-6 py-4 text-gray-500" data-label="Bill Date">${billDisplayDate}</td>
+    <td class="px-6 py-4 text-center font-medium" data-label="QTY">${bill.qty}</td>
+    <td class="px-6 py-4 text-right font-bold text-gray-800" data-label="Total">฿${Number(bill.total).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+    
+    <td class="px-6 py-4" data-label="Received Date">
+        ${isReceived ? 
+            `<div class="flex items-center text-green-600 font-bold justify-end">
+                <span class="mr-2">✅</span>
+                <span>${displayDate}</span>
+            </div>` : 
+            `<input type="date" 
+                class="bg-white border border-gray-200 rounded-xl px-3 py-2 outline-none focus:border-wacoal-pink text-sm w-full max-w-[160px]"
+                id="date-${index}">`
+        }
+    </td>
+    
+    <td class="px-6 py-4" data-label="Status">
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${isReceived ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}">
+            ${isReceived ? 'Received' : 'Pending'}
+        </span>
+    </td>
+    
+    <td class="px-6 py-4 text-center" data-label="Action">
+        ${isReceived ? 
+            `<button onclick="reEdit(${index})" class="text-wacoal-pink text-xs font-medium">แก้ไข</button>` :
+            `<button onclick="updateData(${index})" class="w-full bg-gray-900 text-white py-3 rounded-xl text-sm font-bold mt-2">บันทึกข้อมูล</button>`
+        }
+    </td>
+`;
         tbody.appendChild(tr);
     });
 }
