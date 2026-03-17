@@ -43,14 +43,27 @@
         .hide-scroll::-webkit-scrollbar-thumb:hover {
             background: #aaa; 
         }
+
+        /* ปรับแต่ง Sticky สำหรับ Header หลัก และ หัวตาราง */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        /* ให้หัวตารางติดอยู่ที่ขอบล่างของ Sticky Header พอดี */
+        .sticky-table-head {
+            position: sticky;
+            top: 0; /* หากต้องการให้ติดขอบบนสุดของ Container */
+            z-index: 30;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <div id="app" class="flex-grow flex items-center justify-center p-2 sm:p-4">
+    <div id="app" class="flex-grow flex flex-col items-center p-2 sm:p-4">
         
-        <!-- Page 1: Login -->
-        <div id="loginPage" class="w-full max-w-md glass-morphism rounded-2xl shadow-2xl p-6 sm:p-8 transition-all duration-500">
+        <div id="loginPage" class="w-full max-w-md glass-morphism rounded-2xl shadow-2xl p-6 sm:p-8 mt-10 transition-all duration-500">
             <div class="text-center mb-8">
                 <div class="flex justify-center mb-4">
                     <div class="w-32 h-12 bg-gray-100 flex items-center justify-center rounded font-bold text-gray-400">WACOAL</div>
@@ -83,9 +96,9 @@
             </div>
         </div>
 
-        <!-- Page 2: Dashboard/ReceiveBill -->
         <div id="dashboardPage" class="hidden w-full max-w-6xl flex flex-col space-y-4">
-            <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center glass-morphism">
+            
+            <div class="sticky top-0 z-50 bg-white/90 backdrop-blur-md rounded-xl shadow-md p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center border border-white/20">
                 <div class="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-wacoal-pink rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-inner shrink-0">W</div>
                     <div class="truncate">
@@ -103,24 +116,22 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                <!-- เพิ่ม max-h-screen หรือระบุความสูงเพื่อรองรับการเลื่อนแนวตั้งและ Sticky Header -->
-                <div class="overflow-x-auto overflow-y-auto hide-scroll max-h-[70vh]">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100">
+                <div class="overflow-x-auto overflow-y-auto hide-scroll max-h-[75vh]">
                     <table class="w-full text-left border-collapse whitespace-nowrap">
-                        <thead class="sticky top-0 z-30 shadow-sm">
-                            <tr class="bg-gray-50 border-b border-gray-200">
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-50">Store Name</th>
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-50">Store ID</th>
+                        <thead class="sticky top-0 z-40">
+                            <tr class="bg-gray-100 border-b border-gray-200">
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-100">Store Name</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-100">Store ID</th>
                                 
-                                <!-- สำหรับ Bill No: ต้องเพิ่ม top-0 และ z-40 เพื่อให้อยู่เหนือทั้งแถวและคอลัมน์อื่นเวลาเลื่อน -->
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-bold text-gray-800 sticky left-0 top-0 z-40 bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Bill No.</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-bold text-gray-800 sticky left-0 z-50 bg-gray-100 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Bill No.</th>
                                 
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-50">Bill Date</th>
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-center bg-gray-50">QTY</th>
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-right bg-gray-50">Total</th>
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-50">Received Date</th>
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-50">Status</th>
-                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-center bg-gray-50">Action</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-100">Bill Date</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-center bg-gray-100">QTY</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-right bg-gray-100">Total</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-100">Received Date</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 bg-gray-100">Status</th>
+                                <th class="px-3 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-semibold text-gray-600 text-center bg-gray-100">Action</th>
                             </tr>
                         </thead>
                         <tbody id="billTableBody" class="divide-y divide-gray-100">
@@ -134,7 +145,7 @@
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 px-4 sm:px-6 py-2 sm:py-3 bg-gray-800 text-white text-sm sm:text-base rounded-full shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-50 whitespace-nowrap">
+    <div id="toast" class="fixed bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 px-4 sm:px-6 py-2 sm:py-3 bg-gray-800 text-white text-sm sm:text-base rounded-full shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-[60] whitespace-nowrap">
         ข้อความแจ้งเตือน
     </div>
 
@@ -154,6 +165,7 @@
             }
         };
 
+        // --- Logic: Authentication ---
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const userInp = document.getElementById('username').value.trim();
@@ -209,6 +221,7 @@
             await fetchData();
         }
 
+        // --- Logic: Data Management ---
         async function fetchData() {
             const tbody = document.getElementById('billTableBody');
             tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-10 text-center text-sm text-gray-400">กำลังดึงข้อมูลล่าสุดจากระบบ...</td></tr>';
@@ -221,8 +234,8 @@
                     billDate: "2024-02-01", 
                     qty: 15, 
                     total: 12000, 
-                    receivedDate: i % 2 === 0 ? "2024-02-20" : "", 
-                    status: i % 2 === 0 ? "Received" : "Pending"
+                    receivedDate: i % 3 === 0 ? "2024-02-20" : "", 
+                    status: i % 3 === 0 ? "Received" : "Pending"
                 }));
                 renderBills(allBills);
                 return;
@@ -235,34 +248,6 @@
                 renderBills(allBills);
             } catch (error) {
                 showToast("โหลดข้อมูลไม่สำเร็จ");
-            }
-        }
-
-        function formatDateForInput(dateVal) {
-            if (!dateVal) return "";
-            try {
-                const d = new Date(dateVal);
-                if (isNaN(d.getTime())) return "";
-                const month = '' + (d.getMonth() + 1);
-                const day = '' + d.getDate();
-                const year = d.getFullYear();
-                return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-');
-            } catch (e) {
-                return "";
-            }
-        }
-
-        function formatDateDisplay(dateVal) {
-            if (!dateVal) return "-";
-            try {
-                const d = new Date(dateVal);
-                if (isNaN(d.getTime())) return dateVal; 
-                const day = ('' + d.getDate()).padStart(2, '0');
-                const month = ('' + (d.getMonth() + 1)).padStart(2, '0');
-                const year = d.getFullYear();
-                return `${day}/${month}/${year}`;
-            } catch (e) {
-                return dateVal;
             }
         }
 
@@ -353,6 +338,31 @@
             } finally {
                 toggleLoader(false);
             }
+        }
+
+        // --- Utils ---
+        function formatDateForInput(dateVal) {
+            if (!dateVal) return "";
+            try {
+                const d = new Date(dateVal);
+                if (isNaN(d.getTime())) return "";
+                const month = '' + (d.getMonth() + 1);
+                const day = '' + d.getDate();
+                const year = d.getFullYear();
+                return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-');
+            } catch (e) { return ""; }
+        }
+
+        function formatDateDisplay(dateVal) {
+            if (!dateVal) return "-";
+            try {
+                const d = new Date(dateVal);
+                if (isNaN(d.getTime())) return dateVal; 
+                const day = ('' + d.getDate()).padStart(2, '0');
+                const month = ('' + (d.getMonth() + 1)).padStart(2, '0');
+                const year = d.getFullYear();
+                return `${day}/${month}/${year}`;
+            } catch (e) { return dateVal; }
         }
 
         function logout() {
