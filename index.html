@@ -213,6 +213,13 @@
   .badge-received { background: #edf7ee; color: #1a6b28; border: 1px solid #b8e2bd; }
   .badge-pending  { background: #fff8e6; color: #8a5a00; border: 1px solid #f0d98e; }
 
+  /* ★ เพิ่มใหม่ : PO Exp. — ใกล้หมดอายุ / หมดอายุแล้ว */
+  .po-exp-warn { color: #c0392b; font-weight: 700; }
+  .po-exp-expired { color: #c0392b; font-weight: 700; }
+  .po-exp-tag { display: inline-block; font-size: .62rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-left: 6px; vertical-align: middle; white-space: nowrap; }
+  .po-exp-tag.warn    { background: #fff3e0; color: #c0392b; border: 1px solid #f3c9c9; }
+  .po-exp-tag.expired { background: #c0392b; color: #fff; }
+
   .date-input-cell { min-width: 160px; }
   .date-input-wrapper {
     position: relative;
@@ -481,6 +488,7 @@
                 <tr>
                   <th class="th-freeze">Bill No.</th>
                   <th>Bill Date</th>
+                  <th>PO Exp.</th>
                   <th class="td-center">QTY</th>
                   <th class="td-right">Total</th>
                   <th>รับบิลวันที่</th>
@@ -489,7 +497,7 @@
                 </tr>
               </thead>
               <tbody id="bill-table-body">
-                <tr><td colspan="7" class="empty-state">กดรีเฟรชเพื่อโหลดข้อมูล</td></tr>
+                <tr><td colspan="8" class="empty-state">กดรีเฟรชเพื่อโหลดข้อมูล</td></tr>
               </tbody>
             </table>
           </div>
@@ -623,6 +631,24 @@ function parseDDMMYYYY(s) {
     return new Date(+yyyy, +mm - 1, +dd);
   }
   return null;
+}
+
+/**
+ * ★ เพิ่มใหม่ : ตรวจสถานะ PO Exp. เทียบกับวันนี้
+ * คืนค่า { cls, tag } สำหรับใช้แต่งสี/ป้ายกำกับในตาราง
+ *  - หมดอายุแล้ว (วันนี้ > PO Exp.)        → 'po-exp-expired' + ป้าย "หมดอายุ"
+ *  - ใกล้หมดอายุ (เหลือ ≤ 2 วัน)            → 'po-exp-warn'    + ป้าย "ใกล้หมดอายุ"
+ *  - ปกติ                                   → ไม่มี class/ป้าย
+ */
+const PO_EXP_WARNING_DAYS = 2; // จำนวนวันก่อนหมดอายุที่เริ่มแจ้งเตือน
+function getPoExpStatus_(poExpStr) {
+  const d = parseDDMMYYYY(poExpStr);
+  if (!d) return { cls: '', tag: '' };
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const diffDays = Math.round((d - today) / 86400000);
+  if (diffDays < 0)  return { cls: 'po-exp-expired', tag: '<span class="po-exp-tag expired">หมดอายุ</span>' };
+  if (diffDays <= PO_EXP_WARNING_DAYS) return { cls: 'po-exp-warn', tag: '<span class="po-exp-tag warn">ใกล้หมดอายุ</span>' };
+  return { cls: '', tag: '' };
 }
 
 /* ── GAS ── */
@@ -813,24 +839,26 @@ function resetForm() { cartItems = []; document.getElementById('field-date').val
 /* ══ BILL ══ */
 async function fetchBills() {
   clearAlert('bill-alert');
-  document.getElementById('bill-table-body').innerHTML = '<tr><td colspan="7" class="empty-state">กำลังโหลด...</td></tr>';
+  document.getElementById('bill-table-body').innerHTML = '<tr><td colspan="8" class="empty-state">กำลังโหลด...</td></tr>';
   try {
     const result = await gasGetRaw('getBills', { store: currentUser.store });
     allBills = result.data || [];
     renderBills(allBills);
   } catch(e) {
     showAlert('bill-alert', 'โหลดข้อมูลล้มเหลว', 'error');
-    document.getElementById('bill-table-body').innerHTML = '<tr><td colspan="7" class="empty-state">ไม่สามารถโหลดข้อมูลได้</td></tr>';
+    document.getElementById('bill-table-body').innerHTML = '<tr><td colspan="8" class="empty-state">ไม่สามารถโหลดข้อมูลได้</td></tr>';
   }
 }
 
 function renderBills(bills) {
   const tbody = document.getElementById('bill-table-body');
   tbody.innerHTML = '';
-  if (!bills.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">ไม่พบรายการบิล</td></tr>'; return; }
+  if (!bills.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">ไม่พบรายการบิล</td></tr>'; return; }
   bills.forEach((bill, idx) => {
     /* ★ แปลงวันที่ให้ถูกต้อง dd/MM/yyyy ไม่ว่า GAS จะส่งรูปแบบไหนมา */
     const billDateDisplay = toDisplayDate(bill.billDate);      // Bill Date → dd/MM/yyyy
+    const poExpDisplay    = bill.poExp ? toDisplayDate(bill.poExp) : '—'; // ★ เพิ่มใหม่ PO Exp → dd/MM/yyyy
+    const poExpStatus     = bill.poExp ? getPoExpStatus_(poExpDisplay) : { cls: '', tag: '' }; // ★ เพิ่มใหม่ สถานะใกล้/หมดอายุ
     const receivedDisplay = toDisplayDate(bill.receivedDate);  // Received → dd/MM/yyyy
     const receivedInput   = toInputDate(bill.receivedDate);    // → YYYY-MM-DD สำหรับ input
     const isReceived      = !!bill.receivedDate;
@@ -840,6 +868,7 @@ function renderBills(bills) {
     tr.innerHTML = `
       <td class="td-freeze">${bill.billNo}</td>
       <td>${billDateDisplay}</td>
+      <td class="${poExpStatus.cls}">${poExpDisplay}${poExpStatus.tag}</td>
       <td class="td-center">${bill.qty}</td>
       <td class="td-right">${Number(bill.total).toLocaleString('th-TH')}</td>
       <td class="date-input-cell">
