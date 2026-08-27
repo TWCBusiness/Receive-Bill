@@ -488,6 +488,7 @@
                 <tr>
                   <th class="th-freeze">Bill No.</th>
                   <th>Bill Date</th>
+                  <th>เลขที่ PO</th>
                   <th>PO Exp.</th>
                   <th class="td-center">QTY</th>
                   <th class="td-right">Total</th>
@@ -497,7 +498,7 @@
                 </tr>
               </thead>
               <tbody id="bill-table-body">
-                <tr><td colspan="8" class="empty-state">กดรีเฟรชเพื่อโหลดข้อมูล</td></tr>
+                <tr><td colspan="9" class="empty-state">กดรีเฟรชเพื่อโหลดข้อมูล</td></tr>
               </tbody>
             </table>
           </div>
@@ -839,26 +840,27 @@ function resetForm() { cartItems = []; document.getElementById('field-date').val
 /* ══ BILL ══ */
 async function fetchBills() {
   clearAlert('bill-alert');
-  document.getElementById('bill-table-body').innerHTML = '<tr><td colspan="8" class="empty-state">กำลังโหลด...</td></tr>';
+  document.getElementById('bill-table-body').innerHTML = '<tr><td colspan="9" class="empty-state">กำลังโหลด...</td></tr>';
   try {
     const result = await gasGetRaw('getBills', { store: currentUser.store });
     allBills = result.data || [];
     renderBills(allBills);
   } catch(e) {
     showAlert('bill-alert', 'โหลดข้อมูลล้มเหลว', 'error');
-    document.getElementById('bill-table-body').innerHTML = '<tr><td colspan="8" class="empty-state">ไม่สามารถโหลดข้อมูลได้</td></tr>';
+    document.getElementById('bill-table-body').innerHTML = '<tr><td colspan="9" class="empty-state">ไม่สามารถโหลดข้อมูลได้</td></tr>';
   }
 }
 
 function renderBills(bills) {
   const tbody = document.getElementById('bill-table-body');
   tbody.innerHTML = '';
-  if (!bills.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">ไม่พบรายการบิล</td></tr>'; return; }
+  if (!bills.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty-state">ไม่พบรายการบิล</td></tr>'; return; }
   bills.forEach((bill, idx) => {
     /* ★ แปลงวันที่ให้ถูกต้อง dd/MM/yyyy ไม่ว่า GAS จะส่งรูปแบบไหนมา */
     const billDateDisplay = toDisplayDate(bill.billDate);      // Bill Date → dd/MM/yyyy
-    const poExpDisplay    = bill.poExp ? toDisplayDate(bill.poExp) : '—'; // ★ เพิ่มใหม่ PO Exp → dd/MM/yyyy
-    const poExpStatus     = bill.poExp ? getPoExpStatus_(poExpDisplay) : { cls: '', tag: '' }; // ★ เพิ่มใหม่ สถานะใกล้/หมดอายุ
+    const poNumberDisplay = bill.poNumber ? bill.poNumber : '—'; // ★ เพิ่มใหม่ เลขที่ PO
+    const poExpDisplay    = bill.poExp ? toDisplayDate(bill.poExp) : '—'; // PO Exp → dd/MM/yyyy
+    const poExpStatus     = bill.poExp ? getPoExpStatus_(poExpDisplay) : { cls: '', tag: '' }; // สถานะใกล้/หมดอายุ
     const receivedDisplay = toDisplayDate(bill.receivedDate);  // Received → dd/MM/yyyy
     const receivedInput   = toInputDate(bill.receivedDate);    // → YYYY-MM-DD สำหรับ input
     const isReceived      = !!bill.receivedDate;
@@ -868,6 +870,7 @@ function renderBills(bills) {
     tr.innerHTML = `
       <td class="td-freeze">${bill.billNo}</td>
       <td>${billDateDisplay}</td>
+      <td>${poNumberDisplay}</td>
       <td class="${poExpStatus.cls}">${poExpDisplay}${poExpStatus.tag}</td>
       <td class="td-center">${bill.qty}</td>
       <td class="td-right">${Number(bill.total).toLocaleString('th-TH')}</td>
